@@ -30,24 +30,24 @@ const messaging = getMessaging(app);
 //const messaging = firebase.messaging();
 
 
-const apiUrl = "https://script.google.com/macros/s/AKfycbxnUsBZq4eQE9oslyxZcZu2OnefF3boB9xTqbnCHmLoByGgDYz1fWdOGDKS5PxgMtWj/exec";  // Web App URL from Apps Script
+const apiUrl = "https://script.google.com/macros/s/AKfycbwucFsgQA4K6EUwVDR8qNNFU6_jkJm-ONvQPHKa6g_jFHzWWcSfB9aaPrSzdt5EYCfo/exec";
 
-// Register service worker and Firebase Cloud Messaging (FCM)
+// Register the service worker and Firebase Cloud Messaging (FCM)
 if ('serviceWorker' in navigator && 'PushManager' in window) {
     navigator.serviceWorker.register('service-worker.js')
         .then(registration => {
             console.log('Service Worker registered');
-            requestNotificationPermission(registration);
+            requestNotificationPermission();
         })
         .catch(error => console.error('Service Worker registration failed:', error));
 }
 
-// Ask for notification permission
-function requestNotificationPermission(registration) {
+// Request notification permission
+function requestNotificationPermission() {
     Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
             console.log('Notification permission granted.');
-            registerDeviceWithFCM(registration);
+            getTokenFCM();
         } else {
             console.error('Notification permission denied.');
         }
@@ -68,7 +68,7 @@ function getTokenFCM() {
         .catch(error => console.error('Error retrieving FCM token:', error));
 }
 
-// Send FCM token and name to Google Apps Script
+// Send the FCM token and name to Google Apps Script backend
 function sendTokenToBackend(token) {
     const name = document.getElementById('name').value;
 
@@ -89,7 +89,5 @@ function sendTokenToBackend(token) {
 // Handle form submission
 document.getElementById('register-form').addEventListener('submit', function(event) {
     event.preventDefault();
-    navigator.serviceWorker.ready.then(registration => {
-        registerDeviceWithFCM(registration);
-    });
+    getTokenFCM();  // Trigger token retrieval when form is submitted
 });
